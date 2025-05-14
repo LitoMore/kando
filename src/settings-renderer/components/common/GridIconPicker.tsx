@@ -11,9 +11,11 @@
 import React from 'react';
 import classNames from 'classnames/bind';
 import AutoSizer from 'react-virtualized-auto-sizer';
+// import { VirtuosoGrid } from 'react-virtuoso';
 import { FixedSizeGrid as Grid } from 'react-window';
 
 import { IconThemeRegistry } from '../../../common/icon-themes/icon-theme-registry';
+// import { SimpleIconsTheme } from '../../../common/icon-themes/simple-icons-theme';
 import ThemedIcon from './ThemedIcon';
 
 import * as classes from './GridIconPicker.module.scss';
@@ -55,6 +57,7 @@ interface IProps {
 export default (props: IProps) => {
   const [gridInstance, setGridInstance] = React.useState<Grid | null>(null);
   const theme = IconThemeRegistry.getInstance().getTheme(props.theme);
+  // const isSimpleIconsTheme = theme instanceof SimpleIconsTheme;
   const fetchedIcons = theme.iconPickerInfo.listIcons(props.filterTerm);
 
   const columns = 8;
@@ -101,6 +104,60 @@ export default (props: IProps) => {
       });
     }
   }, [gridInstance, props.filterTerm]);
+
+  // if (isSimpleIconsTheme) {
+  //   const iconsMap = theme.icons;
+  //   const iconsArray = Array.from(iconsMap.values());
+
+  //   return (
+  //     <div style={{ flexGrow: 1, minHeight: 0 }}>
+  //       <AutoSizer>
+  //         {({ width, height }: { width: number; height: number }) => (
+  //           <VirtuosoGrid
+  //             style={{ width, height }}
+  //             data={iconsArray}
+  //             overscan={100}
+  //             components={{
+  //               // eslint-disable-next-line @typescript-eslint/naming-convention
+  //               List: React.forwardRef<
+  //                 HTMLDivElement,
+  //                 React.ComponentPropsWithoutRef<'div'>
+  //               >(({ children, style, ...props }, ref) => (
+  //                 <div
+  //                   ref={ref}
+  //                   {...props}
+  //                   style={{
+  //                     ...style,
+  //                     display: 'flex',
+  //                     flexWrap: 'wrap',
+  //                     gap: 5,
+  //                     margin: '10px 0',
+  //                   }}>
+  //                   {children}
+  //                 </div>
+  //               )),
+  //             }}
+  //             itemContent={(index, icon) => (
+  //               <button
+  //                 key={icon.slug}
+  //                 className={cx({
+  //                   pickerIcon: true,
+  //                   selected: index === selectedIndex,
+  //                 })}
+  //                 // style={style}
+  //                 data-tooltip-id="main-tooltip"
+  //                 data-tooltip-content={icon.slug}
+  //                 onClick={() => props.onChange(icon.slug)}
+  //                 onDoubleClick={props.onClose}>
+  //                 <ThemedIcon name={icon.slug} theme={props.theme} size={'80%'} />
+  //               </button>
+  //             )}
+  //           />
+  //         )}
+  //       </AutoSizer>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div style={{ flexGrow: 1, minHeight: 0 }}>

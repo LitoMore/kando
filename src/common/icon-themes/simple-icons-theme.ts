@@ -9,11 +9,14 @@
 // SPDX-License-Identifier: MIT
 
 import { matchSorter } from 'match-sorter';
+import * as simpleIcons from 'simple-icons';
 
 import { IIconTheme } from './icon-theme-registry';
 
 /** This class implements an icon theme that uses the Simple Icons font as icons. */
 export class SimpleIconsTheme implements IIconTheme {
+  protected iconsMap: Map<string, simpleIcons.SimpleIcon>;
+
   /** This array contains all available icon names. It is initialized in the constructor. */
   protected iconNames: Array<string> = [];
 
@@ -24,49 +27,23 @@ export class SimpleIconsTheme implements IIconTheme {
   protected titleToSlugCharsRegex: RegExp;
 
   constructor() {
-    // Load simple-icons.css as text file.
-    const string =
-      require('!!raw-loader!simple-icons-font/font/simple-icons.css').default;
-
-    // Use regex to extract all icon names. In the file above, all the names start with a
-    // '.si-' and end before the next '::before'. We also ensure not to match the variants
-    // with the '--color' suffix.
-    const regex = /\.si-([a-z0-9-_]+(?<!-color))(?=::before)/g;
-    let match;
-
-    while ((match = regex.exec(string)) !== null) {
-      this.iconNames.push(match[1]);
-    }
-
-    // The replacement map is copied from the Simple Icons project.
-    // Source: https://github.com/simple-icons/simple-icons/blob/develop/sdk.mjs
-    this.titleToSlugReplacements = {
-      /* eslint-disable @typescript-eslint/naming-convention */
-      '+': 'plus',
-      '.': 'dot',
-      '&': 'and',
-      /* eslint-enable @typescript-eslint/naming-convention */
-      đ: 'd',
-      ħ: 'h',
-      ı: 'i',
-      ĸ: 'k',
-      ŀ: 'l',
-      ł: 'l',
-      ß: 'ss',
-      ŧ: 't',
-      ø: 'o',
-    };
-
-    // Create a regex that matches all characters in the replacement map.
-    this.titleToSlugCharsRegex = new RegExp(
-      `[${Object.keys(this.titleToSlugReplacements).join('')}]`,
-      'g'
+    this.iconsMap = new Map(
+      Object.entries(simpleIcons).map(([key, value]) => [
+        key.slice(2).toLowerCase(),
+        value,
+      ])
     );
+
+    this.iconNames = Array.from(this.iconsMap.keys());
   }
 
   /** Returns a human-readable name of the icon theme. */
   get name() {
     return 'Simple Icons';
+  }
+
+  get icons() {
+    return this.iconsMap;
   }
 
   /**
@@ -75,15 +52,24 @@ export class SimpleIconsTheme implements IIconTheme {
    * @param icon One of the icons returned by `listIcons`.
    * @returns A div element that contains the icon.
    */
-  createIcon(icon: string) {
+  createIcon(slug: string) {
+    const icon = this.iconsMap.get(slug);
+
     const containerDiv = document.createElement('div');
     containerDiv.classList.add('icon-container');
 
-    const iconDiv = document.createElement('i');
-    containerDiv.appendChild(iconDiv);
+    const iconMask = document.createElement('div');
+    iconMask.classList.add('icon-mask');
 
-    iconDiv.classList.add('si');
-    iconDiv.classList.add('si-' + icon);
+    // [NOTE] The icon color can be changed from there. We can also use CSS to overwrite it.
+    iconMask.style.backgroundColor = '#' + icon.hex;
+
+    // [NOTE] We can consider using file URLs instead of data URLs to improve performance.
+    iconMask.style.maskImage = `url(data:image/svg+xml;base64,${btoa(icon.svg)})`;
+
+    console.log('test', slug);
+
+    containerDiv.appendChild(iconMask);
 
     return containerDiv;
   }

@@ -31,8 +31,8 @@ export class SimpleIconsColoredTheme extends SimpleIconsTheme {
   createIcon(icon: string) {
     const containerDiv = super.createIcon(icon);
 
-    const iconDiv = containerDiv.childNodes[0] as HTMLElement;
-    iconDiv.classList.add('si--color');
+    // const iconDiv = containerDiv.childNodes[0] as HTMLElement;
+    // iconDiv.classList.add('si--color');
 
     return containerDiv;
   }

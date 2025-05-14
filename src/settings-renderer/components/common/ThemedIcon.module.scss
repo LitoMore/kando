@@ -27,6 +27,14 @@
 
     white-space: nowrap;
 
+    :global(.icon-mask) {
+      width: 100%;
+      height: 100%;
+      mask-size: 80%; // [NOTE] We can use a scroller to control the icon size.
+      mask-repeat: no-repeat;
+      mask-position: center center;
+    }
+
     i {
       font-size: 75cqi;
       font-style: normal;
